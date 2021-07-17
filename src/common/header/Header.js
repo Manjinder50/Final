@@ -3,7 +3,7 @@ import './Header.css';
 import logo from '../../assets/logo.svg'
 import Button from "@material-ui/core/Button";
 import Modal,{setAppElement} from "react-modal";
-import {Box, makeStyles, Tab, Tabs,TextField} from "@material-ui/core";
+import {Box, makeStyles, Tab, Tabs} from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
 import PropTypes from "prop-types";
 import {ValidatorForm,TextValidator} from 'react-material-ui-form-validator';
@@ -74,7 +74,7 @@ export default function Header (){
     const [registrationSuccessMsg,setRegistrationSuccessMsg] = useState('');
     const [accessToken, setAccessToken] = useState('');
     const [loginButton, setLoginButton] = useState('Login');
-    const [registerButton, setregisterButton] = useState('Login');
+    const [registerButton, setRegisterButton] = useState('Login');
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
@@ -126,8 +126,42 @@ export default function Header (){
         }
     };
 
-    const onSubmitRegisterForm = (e) =>{
+    const registerInputChangedHandler = (e) => {
+        const state = registerForm;
+        state[e.target.name] = e.target.value;
+        setRegisterForm({...state})
+    }
 
+    const onSubmitRegisterForm = async (e) => {
+        e.preventDefault();
+        const body = {
+            "email_address": registerForm.email,
+            "first_name": registerForm.firstname,
+            "last_name": registerForm.lastname,
+            "mobile_number": registerForm.contactNo,
+            "password": registerForm.regPassword
+        }
+
+        const rawResponse = await fetch('http://localhost:8085/api/v1/signup', {
+            method: 'POST',
+            body: JSON.stringify(body),
+            headers: {
+                'Accept': 'application/json;charset=UTF-8',
+                'Content-Type': 'application/json'
+            },
+        });
+        const response = await rawResponse.json();
+        if (rawResponse.ok) {
+            console.log(response);
+            const registrationSuccessMessage = 'Registration Successful. Please Login!'
+            setRegistrationSuccessMsg(registrationSuccessMessage);
+        }
+        else {
+            console.log(response);
+            const errorCode = rawResponse.status;
+            const errorMsg = response.message;
+            setRegistrationSuccessMsg(`${errorCode} : ${errorMsg}`);
+        }
     }
 
     const loginInputChangedHandler = (e) => {
@@ -135,10 +169,6 @@ export default function Header (){
         state[e.target.name] = e.target.value;
 
         setLoginForm({...state});
-    }
-
-    const registerInputChangedHandler = (e) => {
-
     }
 
     useEffect(()=>{
@@ -233,10 +263,10 @@ export default function Header (){
                     ></TextValidator>
 
                     <TextValidator
-                        id="passwordReg"
+                        id="regPassword"
                         label="Password *"
                         type="password"
-                        name="passwordReg"
+                        name="regPassword"
                         onChange={registerInputChangedHandler}
                         value={regPassword}
                         validators={['required']}
@@ -244,10 +274,10 @@ export default function Header (){
                     ></TextValidator>
 
                     <TextValidator
-                        id="contact"
+                        id="contactNo"
                         label="Contact No. *"
                         type="text"
-                        name="contact"
+                        name="contactNo"
                         onChange={registerInputChangedHandler}
                         value={contactNo}
                         validators={['required']}
