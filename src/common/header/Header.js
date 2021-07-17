@@ -3,9 +3,10 @@ import './Header.css';
 import logo from '../../assets/logo.svg'
 import Button from "@material-ui/core/Button";
 import Modal,{setAppElement} from "react-modal";
-import {Box, makeStyles, Tab, Tabs, FormControl,TextField} from "@material-ui/core";
+import {Box, makeStyles, Tab, Tabs,TextField} from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
 import PropTypes from "prop-types";
+import {ValidatorForm,TextValidator} from 'react-material-ui-form-validator';
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -47,14 +48,33 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const Header = () => {
+export default function Header (){
     const [login,setLogin] = useState(false);
     const [register,setRegister] = useState(false);
     const [modalIsOpen,setModalIsOpen] = useState(false);
-
     const classes = useStyles();
     const [value, setValue] = React.useState(0);
 
+    const [loginForm,setLoginForm] = useState({
+        username: '',
+        password: ''
+    });
+
+    const [registerForm,setRegisterForm] = useState({
+        firstname: '',
+        lastname: '',
+        email: '',
+        regPassword: '',
+        contactNo: ''
+    });
+
+    const {username,password} = loginForm;
+    const {firstname,lastname,email,regPassword,contactNo} = registerForm;
+    const [loginMessage,setLoginMessage] = useState('');
+    const [registrationSuccessMsg,setRegistrationSuccessMsg] = useState('');
+    const [accessToken, setAccessToken] = useState('');
+    const [loginButton, setLoginButton] = useState('Login');
+    const [registerButton, setregisterButton] = useState('Login');
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
@@ -62,64 +82,189 @@ const Header = () => {
         setModalIsOpen(false)
     };
 
+    const onSubmitLoginForm = async (e) => {
+
+        //called on the event when submitting the form to prevent a browser reload/refresh
+        e.preventDefault();
+        let stringToEncode = username + ':' + password;
+        let basicAuth = window.btoa(stringToEncode);
+        const rawResponse = await fetch('http://localhost:8085/api/v1/auth/login', {
+            method:'POST',
+            headers:{
+                'Authorization': `Basic ${basicAuth}`
+            },
+        });
+
+        const response = await rawResponse.json();
+        if(rawResponse.ok) {
+            setAccessToken(rawResponse.headers.get('access-token'));
+            setLoginButton('Logout');
+            setLoginForm({
+                username: '',
+                password: ''
+            });
+            setLoginMessage('');
+            handleClose();
+        } else {
+            const errorCode = rawResponse.status;
+            const errorMsg = response.message;
+            setLoginMessage(`${errorCode} : ${errorMsg}`);
+        }
+
+    }
+
+    const handleLogout = async () => {
+        const rawResponse = await fetch('http://localhost:8085/api/v1/auth/logout', {
+            method:'POST',
+            headers:{
+                'Authorization': `Bearer ${accessToken}`
+            },
+        });
+
+        if(rawResponse.ok) {
+            setLoginButton('Login');
+        }
+    };
+
+    const onSubmitRegisterForm = (e) =>{
+
+    }
+
+    const loginInputChangedHandler = (e) => {
+        const state = loginForm;
+        state[e.target.name] = e.target.value;
+
+        setLoginForm({...state});
+    }
+
+    const registerInputChangedHandler = (e) => {
+
+    }
+
     useEffect(()=>{
         Modal.setAppElement('body');
     })
 
     document.querySelectorAll(" p * div ")
     return(
-    <header>
-        <div>
+        <header>
+            <div className={"logoContainer"}>
             <img className={"logo"} src = {logo} alt={"logo"}/>
-            <div className={"login"}>
-                <Button variant="contained" color={"default"} onClick={()=>setModalIsOpen(true)}>Login</Button>
-            </div>
-                <Modal className={"modal"} isOpen= {modalIsOpen} onRequestClose={handleClose}>
-                    <Tabs value={value} onChange={handleChange} aria-label="simple tabs example" className={classes.tab}>
-                        <Tab label="LOGIN" {...a11yProps(0)} />
-                        <Tab label="REGISTER" {...a11yProps(1)} />
-                    </Tabs>
+        </div>
+    <div className = "{headerButtonContainer}">
+        {
+            loginButton === 'Login' ?
+                <Button className="header-btn" variant="contained" name={loginButton}
+                        onClick={()=>setModalIsOpen(true)}>{loginButton}</Button> :
+                <Button className="header-btn" variant="contained" name={loginButton}
+                        onClick={handleLogout}>{loginButton}</Button>
+        }
+        <Modal className={"modal"} isOpen= {modalIsOpen} onRequestClose={handleClose}>
+            <Tabs value={value} onChange={handleChange} aria-label="simple tabs example" className={classes.tab}>
+                <Tab label="LOGIN" {...a11yProps(0)} />
+                <Tab label="REGISTER" {...a11yProps(1)} />
+            </Tabs>
             <TabPanel value={value} index={0}>
-                <FormControl>
-                    <TextField id="username" label="Username *" color="secondary" />
-                    <br/>
-                    <TextField
-                        id="password"
-                        label="Password *"
+                <ValidatorForm className={"loginForm"} onSubmit={onSubmitLoginForm}>
+                    <TextValidator
+                        id="username"
+                        label="Username *"
+                        type="text"
+                        name="username"
                         color="secondary"
-                    />
+                        onChange={loginInputChangedHandler}
+                        value={username}
+                        validators={['required']}
+                        errorMessages={['required']}
+                    ></TextValidator>
+                    <br/>
+                    <TextValidator
+                        id="password"
+                        type="password"
+                        name="password"
+                        color="secondary"
+                        onChange={loginInputChangedHandler}
+                        label="Password *"
+                        value={password}
+                        validators={['required']}
+                        errorMessages={['required']}
+                    ></TextValidator>
                     <br/><br/>
+                    <p>{loginMessage}</p>
                     <div className={"MuiButton-label"}>
-                    <Button variant="contained" color={"primary"}>Login</Button>
+                        <Button className="loginButton" variant="contained" color={"primary"} type="submit">Login</Button>
                     </div>
-                </FormControl>
+                </ValidatorForm>
             </TabPanel>
             <TabPanel value={value} index={1}>
-                <FormControl>
-                    <TextField id="firstName" label="First Name *" color="secondary" />
-                    <br/>
-                    <TextField
-                        id="lastName" label="Last Name*" color="secondary"
-                    />
-                    <br/>
-                    <TextField id="email" label="Email *" color="secondary" />
-                    <br/>
-                    <TextField
-                        id="password" label="Password *" color="secondary"
-                    />
-                    <br/>
-                    <TextField
-                        id="contactNo" label="Contact No. *" color="secondary"
-                    />
-                    <br/><br/>
-                    <div className={"MuiButton-label"}>
-                        <Button variant="contained" color={"primary"}>Register</Button>
-                    </div>
-                </FormControl>
+                <ValidatorForm className="registerForm" onSubmit={onSubmitRegisterForm} >
+                    <TextValidator
+                        id="firstname"
+                        label="First Name *"
+                        type="text"
+                        name="firstname"
+                        onChange={registerInputChangedHandler}
+                        value={firstname}
+                        validators={['required']}
+                        errorMessages={['required']}
+                    >
+                    </TextValidator>
+
+                    <TextValidator
+                        id="lastname"
+                        label="Last Name *"
+                        type="text"
+                        name="lastname"
+                        onChange={registerInputChangedHandler}
+                        value={lastname}
+                        validators={['required']}
+                        errorMessages={['required']}
+                    ></TextValidator>
+
+                    <TextValidator
+                        id="email"
+                        label="Email *"
+                        type="text"
+                        name="email"
+                        onChange={registerInputChangedHandler}
+                        value={email}
+                        validators={['required']}
+                        errorMessages={['required']}
+                    ></TextValidator>
+
+                    <TextValidator
+                        id="passwordReg"
+                        label="Password *"
+                        type="password"
+                        name="passwordReg"
+                        onChange={registerInputChangedHandler}
+                        value={regPassword}
+                        validators={['required']}
+                        errorMessages={['required']}
+                    ></TextValidator>
+
+                    <TextValidator
+                        id="contact"
+                        label="Contact No. *"
+                        type="text"
+                        name="contact"
+                        onChange={registerInputChangedHandler}
+                        value={contactNo}
+                        validators={['required']}
+                        errorMessages={['required']}
+                    ></TextValidator>
+                    <p>{registrationSuccessMsg}</p>
+                    <br /><br />
+                    <Button className="registerButton" name="Register" variant="contained" color="primary"
+                            type="submit">Register</Button>
+                </ValidatorForm>
             </TabPanel>
-                </Modal>
-        </div>
-    </header>
-    );
+        </Modal>
+    </div>
+</header>
+);
 };
-export default Header;
+
+
+// WEBPACK FOOTER //
+// src/common/header/Header.js

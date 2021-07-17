@@ -4,6 +4,9 @@ header {
     padding: 8px 32px 8px 16px;
 }
 
+.headerButtonContainer{
+    float:right;
+}
 .logo{
     background-color: #ff7f7f;
     height: 35px;
@@ -12,7 +15,11 @@ header {
     width: 35px;
 }
 
-.login{
+.logoContainer{
+    float:left;
+}
+
+.header-btn{
     float: right;
 }
 
