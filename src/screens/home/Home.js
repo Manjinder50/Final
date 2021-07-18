@@ -6,6 +6,7 @@ import GridListTile from '@material-ui/core/GridListTile';
 import GridListTileBar from '@material-ui/core/GridListTileBar';
 import {makeStyles} from "@material-ui/core";
 import Header from "../../common/header/Header";
+import {Link} from 'react-router-dom';
 
 export default function Home({accessToken,setAccessToken,loginButton,setLoginButton}){
 
@@ -33,6 +34,10 @@ export default function Home({accessToken,setAccessToken,loginButton,setLoginBut
             justifyContent: 'space-around',
             overflow: 'hidden',
             backgroundColor: theme.palette.background.paper,
+        },
+        rgridListTile: {
+            margin: '16px',
+            cursor: "pointer",
         },
 
     }));
@@ -107,6 +112,28 @@ export default function Home({accessToken,setAccessToken,loginButton,setLoginBut
                         </GridListTile>
                     ))}
                 </GridList>
+            </div>
+            <div className="released-movie-container">
+                <div className="released-movies">
+                    <div className={classes.rgridMain}>
+                        <GridList className={classes.rgridList} cols={4} cellHeight={350}>
+                            {releasedMovies.map(movie => (
+                                <GridListTile
+                                    className={classes.rgridListTile}
+                                    key={movie.poster_url}
+                                >
+                                    <Link to={"/movie/" + movie.id} >
+                                        <img src={movie.poster_url} alt={movie.title} className="image-link"/>
+                                    </Link>
+                                    <GridListTileBar
+                                        title={movie.title}
+                                        subtitle={<span>Released Date: {movie.release_date}</span>}
+                                    ></GridListTileBar>
+                                </GridListTile>
+                            ))}
+                        </GridList>
+                    </div>
+                </div>
             </div>
         </Fragment>
     );
