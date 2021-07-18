@@ -1,18 +1,22 @@
 import Header from "../common/header/Header";
-import React,{Fragment} from "react";
+import React,{useState} from "react";
 import Home from "./home/Home";
+import { BrowserRouter as Router, Route } from 'react-router-dom';
 
 export default function Controller(){
 
+    const [accessToken, setAccessToken] = useState('');
+    const [loginButton, setLoginButton] = useState('Login');
+
     return (
-        <Fragment>
-        <div>
-            <Header heading="Final" />
-            <div className={"header"}></div>
-        </div>
-        <div>
-            <Home />
-        </div>
-        </Fragment>
+        <Router>
+            <div>
+                <Route exact path="/" render={(props) =>
+                    <Home {...props}
+                          accessToken={accessToken} loginButton={loginButton}
+                          setAccessToken={setAccessToken} setLoginButton={setLoginButton}
+                    />} />
+            </div>
+        </Router>
     );
 }

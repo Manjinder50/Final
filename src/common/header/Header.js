@@ -48,7 +48,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default function Header (){
+export default function Header ({accessToken,setAccessToken,loginButton,setLoginButton}){
     const [login,setLogin] = useState(false);
     const [register,setRegister] = useState(false);
     const [modalIsOpen,setModalIsOpen] = useState(false);
@@ -72,8 +72,8 @@ export default function Header (){
     const {firstname,lastname,email,regPassword,contactNo} = registerForm;
     const [loginMessage,setLoginMessage] = useState('');
     const [registrationSuccessMsg,setRegistrationSuccessMsg] = useState('');
-    const [accessToken, setAccessToken] = useState('');
-    const [loginButton, setLoginButton] = useState('Login');
+    /*const [accessToken, setAccessToken] = useState('');
+    const [loginButton, setLoginButton] = useState('Login');*/
     const [registerButton, setRegisterButton] = useState('Login');
     const handleChange = (event, newValue) => {
         setValue(newValue);
