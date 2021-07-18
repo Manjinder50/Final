@@ -2,6 +2,7 @@ import Header from "../common/header/Header";
 import React,{useState} from "react";
 import Home from "./home/Home";
 import { BrowserRouter as Router, Route } from 'react-router-dom';
+import Details from "./details/Details";
 
 export default function Controller(){
 
@@ -15,6 +16,11 @@ export default function Controller(){
                     <Home {...props}
                           accessToken={accessToken} loginButton={loginButton}
                           setAccessToken={setAccessToken} setLoginButton={setLoginButton}
+                    />} />
+                <Route exact path="/movie/:id" render={({history}, props) =>
+                    <Details {...props}
+                             accessToken={accessToken} loginButton={loginButton}
+                             setAccessToken={setAccessToken} setLoginButton={setLoginButton}
                     />} />
             </div>
         </Router>

@@ -277,6 +277,7 @@ export default function Home({accessToken,setAccessToken,loginButton,setLoginBut
                                     className={classes.rgridListTile}
                                     key={movie.poster_url}
                                 >
+                                    #Provide a link to movie/:id to be clicked to navigate to details page
                                     <Link to={"/movie/" + movie.id} >
                                         <img src={movie.poster_url} alt={movie.title} className="image-link"/>
                                     </Link>
