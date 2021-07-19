@@ -7,6 +7,7 @@ import {Box, makeStyles, Tab, Tabs} from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
 import PropTypes from "prop-types";
 import {ValidatorForm,TextValidator} from 'react-material-ui-form-validator';
+import {Link,useParams} from 'react-router-dom';
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -48,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default function Header ({accessToken,setAccessToken,loginButton,setLoginButton}){
+export default function Header ({accessToken,setAccessToken,loginButton,setLoginButton, showBookShow, movieId}){
     const [login,setLogin] = useState(false);
     const [register,setRegister] = useState(false);
     const [modalIsOpen,setModalIsOpen] = useState(false);
@@ -181,7 +182,19 @@ export default function Header ({accessToken,setAccessToken,loginButton,setLogin
             <div className={"logoContainer"}>
             <img className={"logo"} src = {logo} alt={"logo"}/>
         </div>
-    <div className = "{headerButtonContainer}">
+    <div className = {"headerButtonContainer"}>
+        {
+            showBookShow === true ?
+                (loginButton === 'Login' ?
+                    <Button className="header-btn" variant="contained" name={"bookShow"}
+                            onClick={()=>setModalIsOpen(true)} color={"primary"}>Book Show</Button> :
+                    <Link to={"/bookshow/" + movieId}>
+                        <Button className="header-btn" variant="contained" name={"bookShow"} color={"primary"}>Book
+                            Show</Button>
+                    </Link>)
+                     : null
+        }
+
         {
             loginButton === 'Login' ?
                 <Button className="header-btn" variant="contained" name={loginButton}

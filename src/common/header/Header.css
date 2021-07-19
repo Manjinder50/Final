@@ -7,6 +7,11 @@ header {
 .headerButtonContainer{
     float:right;
 }
+
+.headerButtonContainer button {
+    margin-right: 5px;
+}
+
 .logo{
     background-color: #ff7f7f;
     height: 35px;
@@ -17,10 +22,6 @@ header {
 
 .logoContainer{
     float:left;
-}
-
-.header-btn{
-    float: right;
 }
 
 .modal{

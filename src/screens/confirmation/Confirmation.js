@@ -15,7 +15,7 @@ import { withStyles } from "@material-ui/core/styles";
 import PropTypes from "prop-types";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import green from "@material-ui/core/colors/green";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useParams, useHistory } from "react-router-dom";
 
 const styles = (theme) => ({
   close: {
@@ -33,11 +33,14 @@ const Confirmation = (props) => {
   const [couponCode, setCouponCode] = useState("");
   const [totalPrice, setTotalPrice] = useState(0);
   const [originalTotalPrice, setOriginalTotalPrice] = useState(0);
+  const location = useLocation();
+  const params = useParams();
+  const history = useHistory();
 
   useEffect(() => {
     const price =
-      parseInt(props.location.bookingSummary.unitPrice, 10) *
-      parseInt(props.location.bookingSummary.tickets, 10);
+      parseInt(location.bookingSummary.unitPrice, 10) *
+      parseInt(location.bookingSummary.tickets, 10);
     setTotalPrice(price);
     setOriginalTotalPrice(price);
   }, []);
@@ -45,8 +48,8 @@ const Confirmation = (props) => {
   const confirmBookingHandler = () => {
     let data = JSON.stringify({
       coupon_code: couponCode,
-      show_id: props.location.bookingSummary.showId,
-      tickets: [props.location.bookingSummary.tickets.toString()],
+      show_id: location.bookingSummary.showId,
+      tickets: [location.bookingSummary.tickets.toString()],
     });
 
     fetch(props.baseUrl + "bookings", {
@@ -67,7 +70,7 @@ const Confirmation = (props) => {
   };
 
   const snackBarCloseHandler = () => {
-    props.history.push("/");
+    history.push("/");
   };
 
   const couponCodeChangeHandler = (e) => {
@@ -75,7 +78,7 @@ const Confirmation = (props) => {
   };
 
   const couponApplyHandler = () => {
-    fetch(props.baseUrl + "movies/" + props.match.params.id, {
+    fetch(props.baseUrl + "movies/" + params.id, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -100,11 +103,11 @@ const Confirmation = (props) => {
 
   return (
     <div className="Details">
-      <Header />
+      <Header {...props}/>
 
       <div className="confirmation marginTop16">
         <div>
-          <Link to={"/bookshow/" + props.match.params.id}>
+          <Link to={"/bookshow/" + params.id}>
             <Typography className="back">&#60; Back to Book Show</Typography>
           </Link>
           <br />
@@ -122,7 +125,7 @@ const Confirmation = (props) => {
                 </div>
                 <div>
                   <Typography>
-                    {props.location.bookingSummary.location}
+                    {location.bookingSummary.location}
                   </Typography>
                 </div>
               </div>
@@ -134,7 +137,7 @@ const Confirmation = (props) => {
                 </div>
                 <div>
                   <Typography>
-                    {props.location.bookingSummary.theatre}
+                    {location.bookingSummary.theatre}
                   </Typography>
                 </div>
               </div>
@@ -146,7 +149,7 @@ const Confirmation = (props) => {
                 </div>
                 <div>
                   <Typography>
-                    {props.location.bookingSummary.language}
+                    {location.bookingSummary.language}
                   </Typography>
                 </div>
               </div>
@@ -158,7 +161,7 @@ const Confirmation = (props) => {
                 </div>
                 <div>
                   <Typography>
-                    {props.location.bookingSummary.showDate}
+                    {location.bookingSummary.showDate}
                   </Typography>
                 </div>
               </div>
@@ -170,7 +173,7 @@ const Confirmation = (props) => {
                 </div>
                 <div>
                   <Typography>
-                    {props.location.bookingSummary.tickets.toString()}
+                    {location.bookingSummary.tickets.toString()}
                   </Typography>
                 </div>
               </div>
@@ -182,7 +185,7 @@ const Confirmation = (props) => {
                 </div>
                 <div>
                   <Typography>
-                    {props.location.bookingSummary.unitPrice}
+                    {location.bookingSummary.unitPrice}
                   </Typography>
                 </div>
               </div>
